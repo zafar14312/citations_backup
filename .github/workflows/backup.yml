@@ -21,33 +21,30 @@ jobs:
       - name: Install dependencies
         run: npm install @supabase/supabase-js
       
-      - name: Run CSV Backup
-        env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+      - name: Create backup script
         run: |
-          node -e "
+          cat > backup.js << 'EOF'
           const { createClient } = require('@supabase/supabase-js');
           const fs = require('fs');
           const path = require('path');
-          
+
           async function backup() {
             const supabase = createClient(
               process.env.SUPABASE_URL,
               process.env.SUPABASE_SERVICE_ROLE_KEY
             );
-            
+
             const backupDir = path.join(process.cwd(), 'backups');
             if (!fs.existsSync(backupDir)) fs.mkdirSync(backupDir);
-            
+
             const { data: citations, error } = await supabase.from('citations').select('*');
             if (error) throw error;
-            
+
             if (!citations || citations.length === 0) {
               console.log('No citations found');
               return;
             }
-            
+
             const headers = Object.keys(citations[0]);
             const rows = [
               headers.join(','),
@@ -56,28 +53,34 @@ jobs:
                   const val = row[h];
                   if (val === null) return '';
                   const str = String(val);
-                  if (str.includes(',') || str.includes('\"') || str.includes('\\n')) {
-                    return '\"' + str.replace(/\"/g, '\"\"') + '\"';
+                  if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+                    return '"' + str.replace(/"/g, '""') + '"';
                   }
                   return str;
                 }).join(',')
               )
             ];
-            
-            const csv = rows.join('\\n');
+
+            const csv = rows.join('\n');
             const date = new Date().toISOString().split('T')[0];
             const filename = 'citations_backup_' + date + '.csv';
             fs.writeFileSync(path.join(backupDir, filename), csv);
-            
+
             console.log('✅ Backup saved: ' + filename);
             console.log('📊 Total records: ' + citations.length);
           }
-          
+
           backup().catch(err => {
             console.error('Backup failed:', err);
             process.exit(1);
           });
-          "
+          EOF
+      
+      - name: Run CSV Backup
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: node backup.js
       
       - name: Upload Backup as Artifact
         uses: actions/upload-artifact@v4
