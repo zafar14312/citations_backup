@@ -47,7 +47,15 @@ jobs:
             const { data: citations, error } = await supabase
               .from('citations')
               .select(`
-                *,
+                id,
+                sr_no,
+                citation,
+                category_id,
+                details,
+                year,
+                created_at,
+                user_id,
+                updated_at,
                 categories (
                   name
                 )
@@ -60,20 +68,34 @@ jobs:
               return;
             }
 
-            const headers = Object.keys(citations[0]);
+            const headers = ['id', 'sr_no', 'citation', 'category_name', 'details', 'year', 'created_at', 'user_id', 'updated_at'];
+            
             const rows = [
               headers.join(','),
-              ...citations.map(row => 
-                headers.map(h => {
-                  const val = row[h];
+              ...citations.map(row => {
+                const categoryName = row.categories?.name || '';
+                
+                const values = [
+                  row.id || '',
+                  row.sr_no || '',
+                  row.citation || '',
+                  categoryName,
+                  row.details || '',
+                  row.year || '',
+                  row.created_at || '',
+                  row.user_id || '',
+                  row.updated_at || ''
+                ];
+                
+                return values.map(val => {
                   if (val === null) return '';
                   const str = String(val);
                   if (str.includes(',') || str.includes('"') || str.includes('\n')) {
                     return '"' + str.replace(/"/g, '""') + '"';
                   }
                   return str;
-                }).join(',')
-              )
+                }).join(',');
+              })
             ];
 
             const csv = rows.join('\n');
