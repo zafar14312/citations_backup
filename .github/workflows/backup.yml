@@ -18,7 +18,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: '22.x'
+          check-latest: true
 
       - name: Install dependencies
         run: npm install @supabase/supabase-js ws
@@ -27,7 +28,6 @@ jobs:
         run: |
           cat > backup.js << 'EOF'
           const { createClient } = require('@supabase/supabase-js');
-          const WebSocket = require('ws');
           const fs = require('fs');
           const path = require('path');
 
@@ -35,7 +35,7 @@ jobs:
             const supabase = createClient(
               process.env.SUPABASE_URL,
               process.env.SUPABASE_SERVICE_ROLE_KEY,
-               { realtime: { enabled: false } }
+              { realtime: { enabled: false } }
             );
 
             const backupDir = path.join(process.cwd(), 'backups');
