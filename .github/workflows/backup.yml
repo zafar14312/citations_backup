@@ -2,8 +2,8 @@ name: Weekly Friday Backup
 
 on:
   schedule:
-    - cron: '0 2 * * 5'    // har Friday 2:00 AM
-  workflow_dispatch:         // manual run bhi possible
+    - cron: '0 2 * * 5'
+  workflow_dispatch:
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -45,7 +45,6 @@ jobs:
             const backupDir = path.join(process.cwd(), 'backups');
             if (!fs.existsSync(backupDir)) fs.mkdirSync(backupDir);
 
-            // Get all users for name mapping
             const { data: users, error: usersError } = await supabase
               .from('users')
               .select('id, name');
@@ -57,7 +56,6 @@ jobs:
               userMap[user.id] = user.name || 'Unknown';
             });
 
-            // Get citations with categories
             const { data: citations, error } = await supabase
               .from('citations')
               .select(`
@@ -207,14 +205,9 @@ jobs:
 
           async function main() {
             try {
-              // 1. Backup banao
               const result = await backup();
-              
-              // 2. Weekly email bhejo
               await sendWeeklyEmail(result);
-              
               console.log('Weekly backup completed successfully');
-              
             } catch (err) {
               console.error('Backup failed:', err);
               process.exit(1);
