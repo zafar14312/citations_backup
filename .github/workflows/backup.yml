@@ -44,7 +44,15 @@ jobs:
             const backupDir = path.join(process.cwd(), 'backups');
             if (!fs.existsSync(backupDir)) fs.mkdirSync(backupDir);
 
-            const { data: citations, error } = await supabase.from('citations').select('*');
+            const { data: citations, error } = await supabase
+              .from('citations')
+              .select(`
+                *,
+                categories (
+                  name
+                )
+              `);
+
             if (error) throw error;
 
             if (!citations || citations.length === 0) {
