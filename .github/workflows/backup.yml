@@ -8,19 +8,21 @@ on:
 jobs:
   backup:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write   # 🆕 taake push kar sake
     
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
-      
+
       - name: Install dependencies
         run: npm install @supabase/supabase-js
-      
+
       - name: Create backup script
         run: |
           cat > backup.js << 'EOF'
@@ -75,16 +77,17 @@ jobs:
             process.exit(1);
           });
           EOF
-      
+
       - name: Run CSV Backup
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: node backup.js
-      
-      - name: Upload Backup as Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: citation-backup-${{ github.run_id }}
-          path: backups/*.csv
-          retention-days: 30
+
+      - name: Commit and push backup
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "actions@github.com"
+          git add backups/
+          git commit -m "Automated backup $(date +'%Y-%m-%d')" || echo "No changes to commit"
+          git push
