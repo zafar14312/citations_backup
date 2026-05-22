@@ -35,7 +35,7 @@ jobs:
             const supabase = createClient(
               process.env.SUPABASE_URL,
               process.env.SUPABASE_SERVICE_ROLE_KEY,
-              { realtime: { webSocket: WebSocket } }   // ✅ Fix: WebSocket support
+              { realtime: { webSocketImpl: WebSocket } }   // ✅ Correct option
             );
 
             const backupDir = path.join(process.cwd(), 'backups');
