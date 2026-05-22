@@ -47,19 +47,20 @@ jobs:
             const { data: citations, error } = await supabase
               .from('citations')
               .select(`
-                id,
                 sr_no,
                 citation,
-                category_id,
                 details,
                 year,
                 created_at,
-                user_id,
                 updated_at,
                 categories (
                   name
+                ),
+                profiles (
+                  name
                 )
-              `);
+              `)
+              .order('created_at', { ascending: true });
 
             if (error) throw error;
 
@@ -68,27 +69,32 @@ jobs:
               return;
             }
 
-            const headers = ['id', 'sr_no', 'citation', 'category_name', 'details', 'year', 'created_at', 'user_id', 'updated_at'];
+            const headers = ['Serial No', 'Date Time', 'Case Citation', 'Category', 'Case Details', 'Year', 'Created By', 'Created Date', 'Updated Date'];
             
             const rows = [
               headers.join(','),
-              ...citations.map(row => {
+              ...citations.map((row, index) => {
+                const serialNo = index + 1;
+                const dateTime = row.created_at ? row.created_at.split('.')[0] : '';
                 const categoryName = row.categories?.name || '';
+                const userName = row.profiles?.name || 'Unknown';
+                const createdDate = row.created_at ? row.created_at.split('.')[0] : '';
+                const updatedDate = row.updated_at ? row.updated_at.split('.')[0] : '';
                 
                 const values = [
-                  row.id || '',
-                  row.sr_no || '',
+                  serialNo,
+                  dateTime,
                   row.citation || '',
                   categoryName,
                   row.details || '',
                   row.year || '',
-                  row.created_at || '',
-                  row.user_id || '',
-                  row.updated_at || ''
+                  userName,
+                  createdDate,
+                  updatedDate
                 ];
                 
                 return values.map(val => {
-                  if (val === null) return '';
+                  if (val === null || val === undefined) return '';
                   const str = String(val);
                   if (str.includes(',') || str.includes('"') || str.includes('\n')) {
                     return '"' + str.replace(/"/g, '""') + '"';
