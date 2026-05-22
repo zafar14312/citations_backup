@@ -1,9 +1,9 @@
-name: Daily CSV Backup
+name: Weekly Friday Backup
 
 on:
   schedule:
-    - cron: '0 2 * * *'
-  workflow_dispatch:
+    - cron: '0 2 * * 5'    // har Friday 2:00 AM
+  workflow_dispatch:         // manual run bhi possible
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -25,7 +25,7 @@ jobs:
           check-latest: true
 
       - name: Install dependencies
-        run: npm install @supabase/supabase-js ws
+        run: npm install @supabase/supabase-js nodemailer
 
       - name: Create backup script
         run: |
@@ -33,6 +33,7 @@ jobs:
           const { createClient } = require('@supabase/supabase-js');
           const fs = require('fs');
           const path = require('path');
+          const nodemailer = require('nodemailer');
 
           async function backup() {
             const supabase = createClient(
@@ -44,7 +45,7 @@ jobs:
             const backupDir = path.join(process.cwd(), 'backups');
             if (!fs.existsSync(backupDir)) fs.mkdirSync(backupDir);
 
-            // Step 1: Get all users (id -> name mapping)
+            // Get all users for name mapping
             const { data: users, error: usersError } = await supabase
               .from('users')
               .select('id, name');
@@ -56,7 +57,7 @@ jobs:
               userMap[user.id] = user.name || 'Unknown';
             });
 
-            // Step 2: Get citations with categories
+            // Get citations with categories
             const { data: citations, error } = await supabase
               .from('citations')
               .select(`
@@ -118,22 +119,119 @@ jobs:
             const csv = rows.join('\n');
             const date = new Date().toISOString().split('T')[0];
             const filename = 'citations_backup_' + date + '.csv';
-            fs.writeFileSync(path.join(backupDir, filename), csv);
+            const filepath = path.join(backupDir, filename);
+            fs.writeFileSync(filepath, csv);
 
-            console.log('✅ Backup saved: ' + filename);
-            console.log('📊 Total records: ' + citations.length);
+            console.log('Backup saved: ' + filename);
+            console.log('Total records: ' + citations.length);
+            
+            return { filename, filepath, recordCount: citations.length, date };
           }
 
-          backup().catch(err => {
-            console.error('Backup failed:', err);
-            process.exit(1);
-          });
+          async function sendWeeklyEmail(result) {
+            const transporter = nodemailer.createTransport({
+              host: process.env.EMAIL_HOST,
+              port: parseInt(process.env.EMAIL_PORT),
+              secure: false,
+              auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS
+              }
+            });
+
+            const mailOptions = {
+              from: '"Citations Backup System" <' + process.env.EMAIL_USER + '>',
+              to: 'zafar.gsheet@gmail.com',
+              subject: 'Weekly Citations Backup - ' + result.date,
+              html: '
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                  <h2 style="color: #2c5282;">Citations Backup System</h2>
+                  
+                  <p>Assalam-o-Alaikum Sir,</p>
+                  
+                  <p>Your <strong>weekly</strong> citations backup for <strong>' + result.date + '</strong> has been successfully generated.</p>
+                  
+                  <div style="background: #f7fafc; padding: 15px; border-radius: 5px; margin: 20px 0;">
+                    <h3 style="margin-top: 0; color: #2d3748;">Backup Summary:</h3>
+                    <ul style="list-style: none; padding: 0;">
+                      <li>Date: <strong>' + result.date + '</strong></li>
+                      <li>Total Records: <strong>' + result.recordCount + '</strong></li>
+                      <li>File Name: <strong>' + result.filename + '</strong></li>
+                      <li>Schedule: <strong>Every Friday 2:00 AM</strong></li>
+                    </ul>
+                  </div>
+                  
+                  <p>Please find the attached CSV file. You can download it and import into Excel or Google Sheets for review.</p>
+                  
+                  <p style="margin-top: 30px;">
+                    Best regards,<br>
+                    <strong>Citations Backup System</strong><br>
+                    <span style="color: #718096; font-size: 12px;">Automated weekly backup every Friday at 2:00 AM</span>
+                  </p>
+                  
+                  <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 20px 0;">
+                  <p style="color: #a0aec0; font-size: 11px;">
+                    This is an automated message. Please do not reply directly to this email.
+                  </p>
+                </div>
+              ',
+              text: 'Assalam-o-Alaikum Sir,\n\n' +
+                'Your weekly citations backup for ' + result.date + ' has been successfully generated.\n\n' +
+                'Backup Summary:\n' +
+                '- Date: ' + result.date + '\n' +
+                '- Total Records: ' + result.recordCount + '\n' +
+                '- File Name: ' + result.filename + '\n' +
+                '- Schedule: Every Friday 2:00 AM\n\n' +
+                'Please find the attached CSV file. You can download it and import into Excel or Google Sheets for review.\n\n' +
+                'Best regards,\n' +
+                'Citations Backup System\n' +
+                'Automated weekly backup every Friday at 2:00 AM\n\n' +
+                'This is an automated message. Please do not reply directly to this email.',
+              attachments: [
+                {
+                  filename: result.filename,
+                  path: result.filepath
+                }
+              ]
+            };
+
+            try {
+              const info = await transporter.sendMail(mailOptions);
+              console.log('Email sent: ' + info.messageId);
+              return true;
+            } catch (error) {
+              console.error('Email failed:', error.message);
+              return false;
+            }
+          }
+
+          async function main() {
+            try {
+              // 1. Backup banao
+              const result = await backup();
+              
+              // 2. Weekly email bhejo
+              await sendWeeklyEmail(result);
+              
+              console.log('Weekly backup completed successfully');
+              
+            } catch (err) {
+              console.error('Backup failed:', err);
+              process.exit(1);
+            }
+          }
+
+          main();
           EOF
 
       - name: Run CSV Backup
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          EMAIL_HOST: ${{ secrets.EMAIL_HOST }}
+          EMAIL_PORT: ${{ secrets.EMAIL_PORT }}
+          EMAIL_USER: ${{ secrets.EMAIL_USER }}
+          EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
         run: node backup.js
 
       - name: Commit and push backup
@@ -141,5 +239,5 @@ jobs:
           git config user.name "GitHub Actions Bot"
           git config user.email "actions@github.com"
           git add backups/
-          git commit -m "Automated backup $(date +'%Y-%m-%d')" || echo "No changes to commit"
+          git commit -m "Weekly backup $(date +'%Y-%m-%d')" || echo "No changes to commit"
           git push
