@@ -1,0 +1,148 @@
+name: Monthly Log Export
+
+on:
+  schedule:
+    - cron: '0 2 1 * *'
+  workflow_dispatch:
+
+jobs:
+  export-logs:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm install @supabase/supabase-js
+
+      - name: Export logs from Supabase
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          cat > export-logs.js << 'EOF'
+          const { createClient } = require('@supabase/supabase-js');
+          const fs = require('fs');
+          const path = require('path');
+
+          async function exportLogs() {
+            const supabase = createClient(
+              process.env.SUPABASE_URL,
+              process.env.SUPABASE_SERVICE_ROLE_KEY
+            );
+
+            const logsDir = path.join(process.cwd(), 'monthly-logs');
+            if (!fs.existsSync(logsDir)) fs.mkdirSync(logsDir);
+
+            const { data: logs, error } = await supabase
+              .from('system_logs')
+              .select('*')
+              .order('created_at', { ascending: false });
+
+            if (error) {
+              console.error('ERROR: Failed to fetch logs:', error.message);
+              fs.writeFileSync(path.join(logsDir, 'ERROR_' + new Date().toISOString().split('T')[0] + '.txt'), 
+                'Error: ' + error.message);
+              process.exit(1);
+            }
+
+            if (!logs || logs.length === 0) {
+              console.log('No logs found');
+              fs.writeFileSync(path.join(logsDir, 'NO_LOGS_' + new Date().toISOString().split('T')[0] + '.txt'), 
+                'No logs');
+              return;
+            }
+
+            const headers = Object.keys(logs[0]);
+            const rows = [
+              headers.join(','),
+              ...logs.map(row => 
+                headers.map(h => {
+                  const val = row[h];
+                  if (val === null) return '';
+                  const str = String(val);
+                  if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+                    return '"' + str.replace(/"/g, '""') + '"';
+                  }
+                  return str;
+                }).join(',')
+              )
+            ];
+
+            const csv = rows.join('\n');
+            const date = new Date().toISOString().split('T')[0];
+            const filename = 'system_logs_' + date + '.csv';
+            fs.writeFileSync(path.join(logsDir, filename), csv);
+
+            console.log('SUCCESS: Exported ' + filename);
+            console.log('Total: ' + logs.length);
+          }
+
+          exportLogs().catch(err => {
+            console.error('FATAL:', err);
+            process.exit(1);
+          });
+          EOF
+          node export-logs.js
+
+      - name: Delete logs from Supabase
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          cat > delete-logs.js << 'EOF'
+          const { createClient } = require('@supabase/supabase-js');
+
+          async function deleteLogs() {
+            const supabase = createClient(
+              process.env.SUPABASE_URL,
+              process.env.SUPABASE_SERVICE_ROLE_KEY
+            );
+
+            const { error } = await supabase
+              .from('system_logs')
+              .delete()
+              .gt('id', '00000000-0000-0000-0000-000000000000');
+
+            if (error) {
+              console.error('ERROR: Failed to delete:', error.message);
+              process.exit(1);
+            }
+
+            console.log('SUCCESS: All logs deleted');
+          }
+
+          deleteLogs().catch(err => {
+            console.error('FATAL:', err);
+            process.exit(1);
+          });
+          EOF
+          node delete-logs.js
+
+      - name: Commit and push logs
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "actions@github.com"
+          git add monthly-logs/
+          git commit -m "Monthly log export $(date +'%Y-%m-%d')" || echo "No changes"
+          git push
+
+      - name: Cleanup old logs (keep 3)
+        run: |
+          cd monthly-logs
+          count=$(ls -1 *.csv 2>/dev/null | wc -l)
+          if [ "$count" -gt 3 ]; then
+            ls -t *.csv | tail -n +4 | xargs -r rm -f
+          fi
+          cd ..
+          git add monthly-logs/
+          git commit -m "Cleanup old logs" || echo "No changes"
+          git push
