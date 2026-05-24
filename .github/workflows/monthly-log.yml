@@ -2,7 +2,7 @@ name: Monthly Log Export
 
 on:
   schedule:
-    - cron: '0 2 1 * *'
+    - cron: '0 2 1 * *'  # 1st of every month at 2 AM
   workflow_dispatch:
 
 jobs:
@@ -23,7 +23,7 @@ jobs:
       - name: Install dependencies
         run: npm install @supabase/supabase-js
 
-      - name: Export logs from Supabase
+      - name: Export logs from Supabase (Formatted)
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
@@ -32,6 +32,34 @@ jobs:
           const { createClient } = require('@supabase/supabase-js');
           const fs = require('fs');
           const path = require('path');
+
+          // Helper: Format user agent to short form
+          function formatUserAgent(ua) {
+            if (!ua) return 'Unknown';
+            const browser = ua.includes('Chrome') ? 'Chrome' : 
+                           ua.includes('Firefox') ? 'Firefox' : 
+                           ua.includes('Safari') ? 'Safari' : 
+                           ua.includes('Edge') ? 'Edge' : 'Browser';
+            const os = ua.includes('Windows') ? 'Windows' : 
+                      ua.includes('Mac') ? 'Mac' : 
+                      ua.includes('Linux') ? 'Linux' : 
+                      ua.includes('Android') ? 'Android' : 
+                      ua.includes('iPhone') ? 'iOS' : 'OS';
+            return `${browser} / ${os}`;
+          }
+
+          // Helper: Format time to readable
+          function formatTime(isoString) {
+            const date = new Date(isoString);
+            return date.toLocaleString('en-US', {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit',
+              hour12: true
+            });
+          }
 
           async function exportLogs() {
             const supabase = createClient(
@@ -42,32 +70,48 @@ jobs:
             const logsDir = path.join(process.cwd(), 'monthly-logs');
             if (!fs.existsSync(logsDir)) fs.mkdirSync(logsDir);
 
+            // Fetch logs with user names (join with users table)
             const { data: logs, error } = await supabase
               .from('system_logs')
-              .select('*')
+              .select('*, users(name)')
               .order('created_at', { ascending: false });
 
             if (error) {
               console.error('ERROR: Failed to fetch logs:', error.message);
-              fs.writeFileSync(path.join(logsDir, 'ERROR_' + new Date().toISOString().split('T')[0] + '.txt'), 
-                'Error: ' + error.message);
+              fs.writeFileSync(
+                path.join(logsDir, 'ERROR_' + new Date().toISOString().split('T')[0] + '.txt'), 
+                'Error: ' + error.message
+              );
               process.exit(1);
             }
 
             if (!logs || logs.length === 0) {
               console.log('No logs found');
-              fs.writeFileSync(path.join(logsDir, 'NO_LOGS_' + new Date().toISOString().split('T')[0] + '.txt'), 
-                'No logs');
+              fs.writeFileSync(
+                path.join(logsDir, 'NO_LOGS_' + new Date().toISOString().split('T')[0] + '.txt'), 
+                'No logs found for this month'
+              );
               return;
             }
 
-            const headers = Object.keys(logs[0]);
+            // Format logs for export
+            const formattedLogs = logs.map(row => ({
+              user_name: row.users?.name || row.user_id,  // Use name if available, else ID
+              action: row.action,
+              details: row.details,
+              ip_address: row.ip_address,
+              device: formatUserAgent(row.user_agent),
+              created_at: formatTime(row.created_at),
+            }));
+
+            // Create CSV with formatted data
+            const headers = Object.keys(formattedLogs[0]);
             const rows = [
               headers.join(','),
-              ...logs.map(row => 
+              ...formattedLogs.map(row => 
                 headers.map(h => {
                   const val = row[h];
-                  if (val === null) return '';
+                  if (val === null || val === undefined) return '';
                   const str = String(val);
                   if (str.includes(',') || str.includes('"') || str.includes('\n')) {
                     return '"' + str.replace(/"/g, '""') + '"';
@@ -83,7 +127,8 @@ jobs:
             fs.writeFileSync(path.join(logsDir, filename), csv);
 
             console.log('SUCCESS: Exported ' + filename);
-            console.log('Total: ' + logs.length);
+            console.log('Total logs: ' + logs.length);
+            console.log('Sample formatted row:', JSON.stringify(formattedLogs[0], null, 2));
           }
 
           exportLogs().catch(err => {
@@ -117,7 +162,7 @@ jobs:
               process.exit(1);
             }
 
-            console.log('SUCCESS: All logs deleted');
+            console.log('SUCCESS: All logs deleted from Supabase');
           }
 
           deleteLogs().catch(err => {
