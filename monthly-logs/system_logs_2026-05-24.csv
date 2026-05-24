@@ -1,8 +1,5 @@
 user_name,action,details,ip_address,device,created_at
-Admin,logout,"{""method"":""manual""}",37.111.143.61,Chrome / Windows,"May 24, 2026, 04:11 PM"
-Admin,citation_deleted,"{""citation_id"":""201eb31a-cf14-4a51-8f0b-79b9b1a1cd74"",""title"":""PLD 2026 SC 47""}",37.111.143.61,Chrome / Windows,"May 24, 2026, 04:10 PM"
-Admin,citation_updated,"{""citation_id"":""201eb31a-cf14-4a51-8f0b-79b9b1a1cd74"",""old_title"":""PLD 2026 SC 47"",""new_title"":""PLD 2026 SC 47"",""changes"":""citation, details, year""}",37.111.143.61,Chrome / Windows,"May 24, 2026, 04:10 PM"
-Admin,citation_created,"{""citation_id"":""201eb31a-cf14-4a51-8f0b-79b9b1a1cd74"",""title"":""PLD 2026 SC 47"",""category_id"":""59a375fe-cc73-41f2-9d39-c5ce232bb59f"",""year"":""2026""}",37.111.143.61,Chrome / Windows,"May 24, 2026, 04:10 PM"
-Admin,login,"{""method"":""password"",""remember_me"":false}",37.111.143.61,Chrome / Windows,"May 24, 2026, 04:09 PM"
-Admin,logout,"{""method"":""manual""}",::1,Chrome / Windows,"May 24, 2026, 04:07 PM"
-Admin,login,"{""method"":""password"",""remember_me"":false}",::1,Chrome / Windows,"May 24, 2026, 04:06 PM"
+Admin,login,"{""method"":""password"",""remember_me"":false}",::1,Chrome / Windows,"May 24, 2026, 05:29:15 PM"
+Admin,login,"{""method"":""password"",""remember_me"":false}",::1,Chrome / Windows,"May 24, 2026, 05:07:53 PM"
+Admin,login,"{""method"":""password"",""remember_me"":false}",::1,Chrome / Windows,"May 24, 2026, 04:46:25 PM"
+Admin,login,"{""method"":""password"",""remember_me"":false}",::1,Chrome / Windows,"May 24, 2026, 04:26:10 PM"
