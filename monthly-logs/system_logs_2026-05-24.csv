@@ -1,7 +1,6 @@
-id,user_id,action,details,ip_address,user_agent,created_at,updated_at
-79b8cfdb-7ef5-48d9-a6dc-92c95f701880,6b67c1fe-36e3-4283-a6ca-dfe4a9adba20,logout,"{""method"":""manual""}",37.111.155.37,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",2026-05-24T12:49:37.878709+00:00,2026-05-24T12:49:37.878709+00:00
-8efb59b6-3eb4-43eb-af5f-08343a1066fc,6b67c1fe-36e3-4283-a6ca-dfe4a9adba20,login,"{""method"":""password"",""remember_me"":false}",37.111.155.37,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",2026-05-24T12:49:14.54667+00:00,2026-05-24T12:49:14.54667+00:00
-a5fe845f-4cef-4cc0-8966-4a47af6a6130,9dfc2b05-678b-4b2c-8cd3-7d23152801fa,logout,"{""method"":""manual""}",37.111.155.37,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",2026-05-24T12:03:39.511769+00:00,2026-05-24T12:03:39.511769+00:00
-6e3e44fa-6463-4dfe-81ca-d4a8918d32ba,9dfc2b05-678b-4b2c-8cd3-7d23152801fa,login,"{""method"":""password"",""remember_me"":false}",37.111.155.37,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",2026-05-24T12:03:33.294193+00:00,2026-05-24T12:03:33.294193+00:00
-e4c00db2-8f14-4bcd-978d-5bf1a8651076,6b67c1fe-36e3-4283-a6ca-dfe4a9adba20,logout,"{""method"":""manual""}",37.111.155.37,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",2026-05-24T12:03:18.21799+00:00,2026-05-24T12:03:18.21799+00:00
-2be188ff-40be-41b8-93a3-e04847ba89ba,6b67c1fe-36e3-4283-a6ca-dfe4a9adba20,login,"{""method"":""password"",""remember_me"":false}",37.111.155.37,"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36",2026-05-24T12:03:07.070136+00:00,2026-05-24T12:03:07.070136+00:00
+user_name,action,details,ip_address,device,created_at
+Admin,login,"{""method"":""password"",""remember_me"":true}",37.111.143.61,Chrome / Windows,"May 24, 2026, 03:51 PM"
+user1,logout,"{""method"":""manual""}",37.111.143.61,Chrome / Windows,"May 24, 2026, 03:50 PM"
+user1,login,"{""method"":""password"",""remember_me"":false}",37.111.143.61,Chrome / Windows,"May 24, 2026, 03:50 PM"
+Admin,logout,"{""method"":""manual""}",37.111.143.61,Chrome / Windows,"May 24, 2026, 03:50 PM"
+Admin,login,"{""method"":""password"",""remember_me"":false}",37.111.143.61,Chrome / Windows,"May 24, 2026, 03:50 PM"
