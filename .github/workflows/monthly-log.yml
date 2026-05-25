@@ -1,29 +1,23 @@
-name: Monthly Log Export (Citations + Deleted Flag)
+name: Monthly Log Export (Citations + System Logs)
 
 on:
   schedule:
-    - cron: '0 2 1 * *'      # 1st of every month at 2 AM UTC
+    - cron: '0 2 1 * *'
   workflow_dispatch:
 
 jobs:
-  export-citations-log:
+  export-monthly-logs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 22
+      - run: npm install @supabase/supabase-js
 
-      - name: Install Supabase client
-        run: npm install @supabase/supabase-js
-
-      - name: Generate monthly citations CSV (with deleted flag)
+      - name: Generate citations CSV and system logs CSV
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
@@ -31,104 +25,79 @@ jobs:
           node << 'EOF'
           const { createClient } = require('@supabase/supabase-js');
           const fs = require('fs');
-          const path = require('path');
-
           const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
 
-          function formatDateTime(date) {
-            if (!date) return '';
-            const d = new Date(date);
-            const year = d.getFullYear();
-            const month = String(d.getMonth() + 1).padStart(2, '0');
-            const day = String(d.getDate()).padStart(2, '0');
-            const hours = String(d.getHours()).padStart(2, '0');
-            const minutes = String(d.getMinutes()).padStart(2, '0');
-            const seconds = String(d.getSeconds()).padStart(2, '0');
-            return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
-          }
+          const fmt = d => d ? new Date(d).toISOString().slice(0,19).replace('T',' ') : '';
 
-          async function run() {
-            const { data: citations, error: cErr } = await supabase
-              .from('citations')
-              .select('*')
-              .order('created_at', { ascending: true });
-            if (cErr) throw cErr;
-
-            const { data: users, error: uErr } = await supabase
-              .from('users')
-              .select('id, name, email');
-            if (uErr) throw uErr;
-
-            const { data: categories, error: catErr } = await supabase
-              .from('categories')
-              .select('id, name');
-            if (catErr) throw catErr;
-
-            const userMap = Object.fromEntries((users || []).map(u => [u.id, u.name || u.email || 'Unknown']));
-            const catMap = Object.fromEntries((categories || []).map(c => [c.id, c.name]));
-
-            let sr = 1;
-            const rows = (citations || []).map(c => ({
+          async function main() {
+            // ----- Citations -----
+            const { data: citations } = await supabase.from('citations').select('*').order('created_at');
+            const { data: users } = await supabase.from('users').select('id,name,email');
+            const { data: cats } = await supabase.from('categories').select('id,name');
+            const userMap = Object.fromEntries((users||[]).map(u=>[u.id, u.name||u.email||'Unknown']));
+            const catMap = Object.fromEntries((cats||[]).map(c=>[c.id, c.name]));
+            let sr=1;
+            const citationRows = (citations||[]).map(c => ({
               sr_no: sr++,
-              citation: c.citation || '',
-              category_name: catMap[c.category_id] || c.category_id || '',
-              details: c.details || '',
-              year: c.year || '',
-              user_name: userMap[c.user_id] || 'Unknown',
-              created_at: formatDateTime(c.created_at),
-              updated_at: formatDateTime(c.updated_at),
+              citation: c.citation||'',
+              category_name: catMap[c.category_id]||c.category_id||'',
+              details: c.details||'',
+              year: c.year||'',
+              user_name: userMap[c.user_id]||'Unknown',
+              created_at: fmt(c.created_at),
+              updated_at: fmt(c.updated_at),
               deleted: c.deleted_at ? 'deleted' : ''
             }));
-
-            if (rows.length === 0) {
-              console.log('No citations found');
-              return;
+            const escape = v => v==null ? '' : String(v).includes(',') ? `"${String(v).replace(/"/g,'""')}"` : String(v);
+            if (citationRows.length) {
+              const headers = ['sr_no','citation','category_name','details','year','user_name','created_at','updated_at','deleted'];
+              const csv = [headers.join(','), ...citationRows.map(r=>headers.map(h=>escape(r[h])).join(','))].join('\n');
+              const now = new Date();
+              const file = `monthly-logs/citations_${now.getFullYear()}_${String(now.getMonth()+1).padStart(2,'0')}.csv`;
+              fs.mkdirSync('monthly-logs', {recursive:true});
+              fs.writeFileSync(file, csv);
+              console.log(`Citations: ${citationRows.length} rows`);
             }
 
-            const headers = ['sr_no', 'citation', 'category_name', 'details', 'year', 'user_name', 'created_at', 'updated_at', 'deleted'];
-            const escape = (val) => {
-              if (val == null) return '';
-              const s = String(val);
-              if (s.includes(',') || s.includes('"') || s.includes('\n')) return `"${s.replace(/"/g, '""')}"`;
-              return s;
-            };
-
-            const csvRows = [
-              headers.join(','),
-              ...rows.map(row => headers.map(h => escape(row[h])).join(','))
-            ];
-            const csvContent = csvRows.join('\n');
-
-            const now = new Date();
-            const year = now.getFullYear();
-            const month = String(now.getMonth() + 1).padStart(2, '0');
-            const logsDir = path.join(process.cwd(), 'monthly-logs');
-            if (!fs.existsSync(logsDir)) fs.mkdirSync(logsDir, { recursive: true });
-            const filename = `citations_${year}_${month}.csv`;
-            fs.writeFileSync(path.join(logsDir, filename), csvContent);
-
-            console.log(`✅ Exported ${rows.length} citations (deleted: ${rows.filter(r => r.deleted).length}) to ${filename}`);
+            // ----- System logs (exclude citation actions) -----
+            const { data: logs } = await supabase
+              .from('system_logs')
+              .select('*, users(name)')
+              .not('action','in','(citation_created,citation_updated,citation_deleted)')
+              .order('created_at',{ascending:false});
+            if (logs && logs.length) {
+              const sysRows = logs.map(l => ({
+                timestamp: fmt(l.created_at),
+                action: l.action,
+                user_name: l.users?.name || l.user_id || 'system',
+                details: typeof l.details === 'object' ? JSON.stringify(l.details) : (l.details||''),
+                ip: l.ip_address||''
+              }));
+              const headers = ['timestamp','action','user_name','details','ip'];
+              const csv = [headers.join(','), ...sysRows.map(r=>headers.map(h=>escape(r[h])).join(','))].join('\n');
+              const now = new Date();
+              const file = `monthly-logs/system_${now.getFullYear()}_${String(now.getMonth()+1).padStart(2,'0')}.csv`;
+              fs.writeFileSync(file, csv);
+              console.log(`System logs: ${sysRows.length} rows`);
+            }
           }
-
-          run().catch(err => {
-            console.error('❌ Fatal error:', err);
-            process.exit(1);
-          });
+          main().catch(e=>{console.error(e); process.exit(1);});
           EOF
 
-      - name: Commit and push monthly log
+      - name: Commit and push
         run: |
           git config user.name "GitHub Actions Bot"
           git config user.email "actions@github.com"
           git add monthly-logs/
-          git commit -m "Monthly citations log $(date +'%Y-%m-%d')" || echo "No changes"
+          git commit -m "Monthly logs $(date +'%Y-%m')" || echo "No changes"
           git push
 
       - name: Keep only last 3 months logs
         run: |
           cd monthly-logs
           ls -1 citations_*.csv 2>/dev/null | sort -r | tail -n +4 | xargs -r rm -f
+          ls -1 system_*.csv 2>/dev/null | sort -r | tail -n +4 | xargs -r rm -f
           cd ..
           git add monthly-logs/
-          git commit -m "Cleanup old monthly logs (keep last 3)" || echo "No changes"
+          git commit -m "Cleanup old logs (keep last 3)" || echo "No changes"
           git push
