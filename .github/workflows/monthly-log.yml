@@ -1,194 +1,134 @@
-name: Monthly Log Export
+name: Monthly Log Export (Citations + Deleted Flag)
 
 on:
   schedule:
-    - cron: '0 2 1 * *'  # 1st of every month at 2 AM
+    - cron: '0 2 1 * *'      # 1st of every month at 2 AM UTC
   workflow_dispatch:
 
 jobs:
-  export-logs:
+  export-citations-log:
     runs-on: ubuntu-latest
     permissions:
       contents: write
 
     steps:
-      - name: Checkout code
+      - name: Checkout repo
         uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 20
 
-      - name: Install dependencies
+      - name: Install Supabase client
         run: npm install @supabase/supabase-js
 
-      - name: Export logs from Supabase (Formatted with Seconds)
+      - name: Generate monthly citations CSV (with deleted flag)
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: |
-          cat > export-logs.js << 'EOF'
+          node << 'EOF'
           const { createClient } = require('@supabase/supabase-js');
           const fs = require('fs');
           const path = require('path');
 
-          // Helper: Format user agent to short form
-          function formatUserAgent(ua) {
-            if (!ua) return 'Unknown';
-            const browser = ua.includes('Chrome') ? 'Chrome' : 
-                           ua.includes('Firefox') ? 'Firefox' : 
-                           ua.includes('Safari') ? 'Safari' : 
-                           ua.includes('Edge') ? 'Edge' : 'Browser';
-            const os = ua.includes('Windows') ? 'Windows' : 
-                      ua.includes('Mac') ? 'Mac' : 
-                      ua.includes('Linux') ? 'Linux' : 
-                      ua.includes('Android') ? 'Android' : 
-                      ua.includes('iPhone') ? 'iOS' : 'OS';
-            return `${browser} / ${os}`;
+          const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
+
+          function formatDateTime(date) {
+            if (!date) return '';
+            const d = new Date(date);
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            const hours = String(d.getHours()).padStart(2, '0');
+            const minutes = String(d.getMinutes()).padStart(2, '0');
+            const seconds = String(d.getSeconds()).padStart(2, '0');
+            return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
           }
 
-          // ✅ UPDATED: Format time with 2-digit seconds
-          function formatTime(isoString) {
-            const date = new Date(isoString);
-            return date.toLocaleString('en-US', {
-              year: 'numeric',
-              month: 'short',
-              day: 'numeric',
-              hour: '2-digit',
-              minute: '2-digit',
-              second: '2-digit',  // ✅ ADDED: 2-digit seconds
-              hour12: true
-            });
-          }
+          async function run() {
+            const { data: citations, error: cErr } = await supabase
+              .from('citations')
+              .select('*')
+              .order('created_at', { ascending: true });
+            if (cErr) throw cErr;
 
-          async function exportLogs() {
-            const supabase = createClient(
-              process.env.SUPABASE_URL,
-              process.env.SUPABASE_SERVICE_ROLE_KEY
-            );
+            const { data: users, error: uErr } = await supabase
+              .from('users')
+              .select('id, name, email');
+            if (uErr) throw uErr;
 
-            const logsDir = path.join(process.cwd(), 'monthly-logs');
-            if (!fs.existsSync(logsDir)) fs.mkdirSync(logsDir);
+            const { data: categories, error: catErr } = await supabase
+              .from('categories')
+              .select('id, name');
+            if (catErr) throw catErr;
 
-            // Fetch logs with user names (join with users table)
-            const { data: logs, error } = await supabase
-              .from('system_logs')
-              .select('*, users(name)')
-              .order('created_at', { ascending: false });
+            const userMap = Object.fromEntries((users || []).map(u => [u.id, u.name || u.email || 'Unknown']));
+            const catMap = Object.fromEntries((categories || []).map(c => [c.id, c.name]));
 
-            if (error) {
-              console.error('ERROR: Failed to fetch logs:', error.message);
-              fs.writeFileSync(
-                path.join(logsDir, 'ERROR_' + new Date().toISOString().split('T')[0] + '.txt'), 
-                'Error: ' + error.message
-              );
-              process.exit(1);
-            }
+            let sr = 1;
+            const rows = (citations || []).map(c => ({
+              sr_no: sr++,
+              citation: c.citation || '',
+              category_name: catMap[c.category_id] || c.category_id || '',
+              details: c.details || '',
+              year: c.year || '',
+              user_name: userMap[c.user_id] || 'Unknown',
+              created_at: formatDateTime(c.created_at),
+              updated_at: formatDateTime(c.updated_at),
+              deleted: c.deleted_at ? 'deleted' : ''
+            }));
 
-            if (!logs || logs.length === 0) {
-              console.log('No logs found');
-              fs.writeFileSync(
-                path.join(logsDir, 'NO_LOGS_' + new Date().toISOString().split('T')[0] + '.txt'), 
-                'No logs found for this month'
-              );
+            if (rows.length === 0) {
+              console.log('No citations found');
               return;
             }
 
-            // Format logs for export
-            const formattedLogs = logs.map(row => ({
-              user_name: row.users?.name || row.user_id,
-              action: row.action,
-              details: row.details,
-              ip_address: row.ip_address,
-              device: formatUserAgent(row.user_agent),
-              created_at: formatTime(row.created_at),  // ✅ Uses new format with seconds
-            }));
+            const headers = ['sr_no', 'citation', 'category_name', 'details', 'year', 'user_name', 'created_at', 'updated_at', 'deleted'];
+            const escape = (val) => {
+              if (val == null) return '';
+              const s = String(val);
+              if (s.includes(',') || s.includes('"') || s.includes('\n')) return `"${s.replace(/"/g, '""')}"`;
+              return s;
+            };
 
-            // Create CSV with formatted data
-            const headers = Object.keys(formattedLogs[0]);
-            const rows = [
+            const csvRows = [
               headers.join(','),
-              ...formattedLogs.map(row => 
-                headers.map(h => {
-                  const val = row[h];
-                  if (val === null || val === undefined) return '';
-                  const str = String(val);
-                  if (str.includes(',') || str.includes('"') || str.includes('\n')) {
-                    return '"' + str.replace(/"/g, '""') + '"';
-                  }
-                  return str;
-                }).join(',')
-              )
+              ...rows.map(row => headers.map(h => escape(row[h])).join(','))
             ];
+            const csvContent = csvRows.join('\n');
 
-            const csv = rows.join('\n');
-            const date = new Date().toISOString().split('T')[0];
-            const filename = 'system_logs_' + date + '.csv';
-            fs.writeFileSync(path.join(logsDir, filename), csv);
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const logsDir = path.join(process.cwd(), 'monthly-logs');
+            if (!fs.existsSync(logsDir)) fs.mkdirSync(logsDir, { recursive: true });
+            const filename = `citations_${year}_${month}.csv`;
+            fs.writeFileSync(path.join(logsDir, filename), csvContent);
 
-            console.log('SUCCESS: Exported ' + filename);
-            console.log('Total logs: ' + logs.length);
-            console.log('Sample formatted row:', JSON.stringify(formattedLogs[0], null, 2));
+            console.log(`✅ Exported ${rows.length} citations (deleted: ${rows.filter(r => r.deleted).length}) to ${filename}`);
           }
 
-          exportLogs().catch(err => {
-            console.error('FATAL:', err);
+          run().catch(err => {
+            console.error('❌ Fatal error:', err);
             process.exit(1);
           });
           EOF
-          node export-logs.js
 
-      - name: Delete logs from Supabase
-        env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-        run: |
-          cat > delete-logs.js << 'EOF'
-          const { createClient } = require('@supabase/supabase-js');
-
-          async function deleteLogs() {
-            const supabase = createClient(
-              process.env.SUPABASE_URL,
-              process.env.SUPABASE_SERVICE_ROLE_KEY
-            );
-
-            const { error } = await supabase
-              .from('system_logs')
-              .delete()
-              .gt('id', '00000000-0000-0000-0000-000000000000');
-
-            if (error) {
-              console.error('ERROR: Failed to delete:', error.message);
-              process.exit(1);
-            }
-
-            console.log('SUCCESS: All logs deleted from Supabase');
-          }
-
-          deleteLogs().catch(err => {
-            console.error('FATAL:', err);
-            process.exit(1);
-          });
-          EOF
-          node delete-logs.js
-
-      - name: Commit and push logs
+      - name: Commit and push monthly log
         run: |
           git config user.name "GitHub Actions Bot"
           git config user.email "actions@github.com"
           git add monthly-logs/
-          git commit -m "Monthly log export $(date +'%Y-%m-%d')" || echo "No changes"
+          git commit -m "Monthly citations log $(date +'%Y-%m-%d')" || echo "No changes"
           git push
 
-      - name: Cleanup old logs (keep 3)
+      - name: Keep only last 3 months logs
         run: |
           cd monthly-logs
-          count=$(ls -1 *.csv 2>/dev/null | wc -l)
-          if [ "$count" -gt 3 ]; then
-            ls -t *.csv | tail -n +4 | xargs -r rm -f
-          fi
+          ls -1 citations_*.csv 2>/dev/null | sort -r | tail -n +4 | xargs -r rm -f
           cd ..
           git add monthly-logs/
-          git commit -m "Cleanup old logs" || echo "No changes"
+          git commit -m "Cleanup old monthly logs (keep last 3)" || echo "No changes"
           git push
