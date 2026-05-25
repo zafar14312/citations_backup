@@ -1,0 +1,6 @@
+timestamp,action,user_name,details,ip
+2026-05-25 11:50:31,cleanup,system,{"timestamp":"2026-05-25T11:50:31.181Z"},
+2026-05-25 05:46:40,cleanup,system,{"timestamp":"2026-05-25T05:46:40.950Z"},
+2026-05-24 18:20:25,login,Admin,"{""method"":""password"",""remember_me"":false}",37.111.143.61
+2026-05-24 18:07:01,login,Admin,"{""method"":""password"",""remember_me"":false}",::1
+2026-05-24 17:52:22,login,Admin,"{""method"":""password"",""remember_me"":false}",37.111.143.61
