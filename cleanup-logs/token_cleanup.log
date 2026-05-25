@@ -1,2 +1,3 @@
 [2026-05-25T11:50:26.560Z] ========== CLEANUP START ==========
 [2026-05-25T11:50:29.100Z] Token cleanup (15 days): 0 old records deleted (cutoff: 2026-05-10T11:50:27.356Z)
+[2026-05-25T11:50:30.079Z] Manifest cleanup (90 days): 0 old records deleted (cutoff: 2026-02-24T11:50:29.813Z)
