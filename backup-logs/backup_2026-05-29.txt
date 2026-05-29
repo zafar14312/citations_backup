@@ -659,3 +659,166 @@ Trial court while considering the facts of other connected cases not available i
 80,2026 PCRLJ 638 Lahore,Miscellaneous,Attorney of a person can lodge FIR with police and can also initiate criminal proceedings before Court for the interest of his principal. If proceedings before Court are initiated by principal and he becomes unavailable or in capacitated the attorney can also continue it on his behalf with the permission of the court.,2026,Admin,2026-05-24 05:39:35,2026-05-24 05:39:35
 
 [2026-05-29] BACKUP SUCCESS: 80 citations backed up. New: 4, Deleted: 0, Updated: 3
+
+[2026-05-29] CITATIONS LOG:
+sr_no,citation,category_name,details,year,user_name,created_at,updated_at
+1,2026 SCMR 308,Appeal,"S. 428 CrPC: 
+Additional Evidence:
+
+Appellate Court cannot remand matter to decide afresh after taking additional evidence.
+
+2026 SCMR 308",2026,system@citations.app,2026-05-05 16:51:41,2026-05-09 10:44:26
+2,2026 YLR 476,Appeal,In an appeal against the order of acquittal it has to be proved that the acquittal order is fanciful and against the law. The acquittal order shall be cancelled only in extraordinary and exceptional circumstances.......-,2026,system@citations.app,2026-05-05 16:51:41,2026-05-29 12:33:06
+3,2026 SCMR 163,Appreciation of Evidence,The blackening on the margins of an entry wound can be caused by a long-range rifle.,2026,system@citations.app,2026-05-05 16:51:41,2026-05-09 10:44:26
+4,2026 YLR 361 Lahore,Appreciation of Evidence,Blood grouping or DNA test was not conducted despite blood stains being available on the recovered crime weapon. Therefore the recovery has no evidentiary value.,2026,system@citations.app,2026-05-05 16:51:41,2026-05-09 10:44:26
+5,2026 YLR 513 Lahore,Appreciation of Evidence,The plea taken by the accused before the Investigating Officer is admissible in evidence under Article 27 of Qanoon-e-Shahadat.,2026,system@citations.app,2026-05-05 16:51:41,2026-05-09 10:44:26
+6,2026 YLR 386/485 Lahore,Appreciation of Evidence,The co-accused of the appellant was acquitted on the basis of the same evidence; therefore the appellant was also acquitted.,2026,system@citations.app,2026-05-05 16:51:41,2026-05-09 10:44:26
+7,2026 YLR 485 Lahore,Appreciation of Evidence,"The brother of the deceased is an interested witness while the other witnesses are chance witnesses because they are not residents of the same locality. The IO also declared some nominated accused innocent but the complainant did not challenge the investigation, which creates doubt. Accused acquitted.",2026,system@citations.app,2026-05-05 16:51:41,2026-05-09 10:44:26
+8,PLD 2026 LAHORE 47,Appreciation of Evidence,COC must be proved through oral and documentary evidence. Further that all the evidence must be put to the accused in his statement under section 342 CRPC.,2026,system@citations.app,2026-05-05 16:51:41,2026-05-09 10:44:26
+9,2026 SCMR251,Appreciation of Evidence,"PPC 302: 
+Rigor Mortis: it starts within 2 to 4 hours and completed in 12 hours in normal temperature. It may become cause to create doubt in the presence of eye witnesses during the occurrence. 
+
+2026 SCMR 251",2026,system@citations.app,2026-05-05 16:51:41,2026-05-09 10:44:26
+10,2026 SCMR 205,Appreciation of Evidence,"PPC 302: 
+Quantum of sentence: 
+Murder of a women: single fire shot at chest disclose intention of the assailant and he deserves no leniency in sentence. 
+
+2026 SCMR 205 
+2005 SCMR 427",2026,system@citations.app,2026-05-05 16:51:41,2026-05-09 10:44:26
+11,PLD 2026 SC 126,Appreciation of Evidence,"Interview During Police Custody: 
+
+Admission by the accused before a journalist during police custody is inadmissible in evidence and cannot be relied upon.
+
+PLD 2026 SC 126",2026,system@citations.app,2026-05-05 16:51:41,2026-05-09 10:44:26
+12,2026 PLD 126 SC,Appreciation of Evidence,The accused confessed before a press reporter during his interview while in custody. This confession has no value because only the magistrate is competent to record the confession.,2026,system@citations.app,2026-05-05 16:51:41,2026-05-09 10:44:26
+13,2026 PCRLJ 201 Lahore,Appreciation of Evidence,One accused was acquitted on the basis of the same evidence. The appeal of his co-accused was dismissed because an overt act was committed by the said accused.,2026,system@citations.app,2026-05-05 16:51:41,2026-05-09 10:44:26
+14,2026 PCRLJ 239 Peshawar,Appreciation of Evidence,The accused made confession before the magistrate that he had committed the murder of his wife. During trial he refused that he was ever produced before the magistrate but this fact was not confirmed from the evidence produced before the court. Appeal dismissed.,2026,system@citations.app,2026-05-05 16:51:41,2026-05-09 10:44:26
+15,2026 MLD 221 Lahore,Appreciation of Evidence,A single doubt in the investigation of the prosecution is sufficient to acquit the accused.,2026,system@citations.app,2026-05-05 16:51:41,2026-05-09 10:44:26
+16,2026 MLD 206 Balochistan,Appreciation of Evidence,"The court did not put the question to the accused in his statement under section 342 CrPC regarding safe custody of case property and convicted the accused on the basis of the same evidence; therefore, the accused was acquitted.",2026,system@citations.app,2026-05-05 16:51:41,2026-05-09 10:44:26
+17,2026 SCMR 87,Appreciation of Evidence,The accused cannot be convicted solely on the basis of his abscondance.,2026,system@citations.app,2026-05-05 16:51:41,2026-05-09 10:44:26
+18,2026 SCMR 182,Appreciation of Evidence,"If the prosecution witness improves his statement regarding any specific point or improves his statement to bring it in line with the medical evidence, the said witness shall be deemed to be dishonest.",2026,system@citations.app,2026-05-05 16:51:41,2026-05-09 10:44:26
+19,2026 SCMR 47,Appreciation of Evidence,"Medical evidence is only corroborative evidence. It only confirms the kind of crime weapon, seat of injury and kind of injury.",2026,system@citations.app,2026-05-05 16:51:41,2026-05-09 10:44:26
+20,2026 PLD 126 SC,Appreciation of Evidence,The last seen evidence will be of more value if there is a short gap between the last seen evidence and the occurrence.,2026,system@citations.app,2026-05-05 16:51:41,2026-05-10 10:58:19
+21,2025 PCLJ 1354 LAHORE,Appreciation of Evidence,Consent defined in rape cases,2025,system@citations.app,2026-05-05 16:51:41,2026-05-09 10:44:26
+22,2021 SCMR 522,Appreciation of Evidence,CDR without any transcript of the call or end to end audio recording could not be considered.,2021,Admin,2026-05-14 13:40:23,2026-05-14 13:40:23
+23,PLJ 2025 Cr.C. 1 Lahore,Appreciation of Evidence,"Through CDR the time, date, duration, location of the caller and the number upon which he made a call can be proved.",2025,Admin,2026-05-14 13:44:29,2026-05-14 13:44:29
+24,2025 SCMR 923,Appreciation of Evidence,"To prove this COC the copies of rapat of daily dairy, copies of register number 19 and copies of road certificate must be submitted before the court in sport of the statement of concerned witnesses.",2025,Admin,2026-05-14 14:11:37,2026-05-14 14:11:37
+25,2026 PCLJ 554 Lahore,Appreciation of Evidence,"Appellant's conviction under section 11 G ATA was  sustainable because it was based on the same evidence for which he was acquitted under section 9 ATA. Once the court found that the material had not been distributed or displayed, was recovered in the concealed form and was UN supported by 0 corroborating evidence of affiliation a conviction under section 11 G of ATA could not follow.",2026,Admin,2026-05-15 06:10:09,2026-05-15 06:10:09
+26,2026 PCRLJ Lahore 526,Appreciation of Evidence,In case of sexual offences the convection can be based on the evidence of minor victim. This condition for said testimony is that the same shall reflect that it is independent unbiased and straightforward to established the acquisition against the accused.,2026,Admin,2026-05-15 06:51:30,2026-05-15 06:52:01
+27,2026 SCMR 476,Appreciation of Evidence,Crime empties recovered from the spot were sent to PFSA  after the arrest of accused and recovery of pistol 30 bore by the accused. The matching report of pistol and crime empties is available on file but the same had lost of  its evidentiary value. Search fact constitution mitigating circumstances which would be sufficient for not awarding the death penalty but imprisonment for life. Thus death penalty was converted into imprisonment for life.,2026,Admin,2026-05-16 05:42:40,2026-05-16 05:45:38
+28,2026 MLD 466 Lahore,Appreciation of Evidence,When a witness improves his statement to strengthen the prosecution case and the moment it is concluded that improvements were made Deliberately and with mala fide intention the testimony of such witness becomes unreliable.,2026,Admin,2026-05-16 06:49:25,2026-05-16 06:49:25
+29,2026 MLD 420 Lahore,Appreciation of Evidence,"Falsus in uno, Falsus in omnibus. 
+If a witness is not coming out with the whole truth than his evidence is liable to be discarded as a whole.",2026,Admin,2026-05-16 06:51:09,2026-05-16 06:51:09
+30,2026 YLR 712 Lahore,Appreciation of Evidence,"The accused got recovered the pistol ie. crime weapon from his house but the I.O did not join any witness of the locality during the recovery proceedings of said pistol, therefore, he violated the law under section 103 CRPC. The recovery of pistol cannot be used as incriminating evidence against the accused and the accused was acquitted from the charge.",2026,Admin,2026-05-16 07:57:22,2026-05-16 07:57:22
+31,2026 YLR 658 Lahore,Appreciation of Evidence,"Lacerated wounds with knife could appear depending upon the kind of knife, its weight and the depending parts of the body where the injuries were caused. Appeal against conviction was dismissed.",2026,Admin,2026-05-16 08:01:09,2026-05-16 08:01:09
+32,2026 SCMR 674,Appreciation of Evidence,"There was no other independent corroboration of the prosecution case against petitioner, hence the prosecution evidence which had already been disbelieved against the acquitted 
+ co-accused could not be believed against the petitioner without independent corroboration. accused acquitted",2026,Admin,2026-05-22 06:58:25,2026-05-22 06:58:25
+33,2026 SCMR 614,Appreciation of Evidence,"The trial court had not put the rationality test to the victim / child witness prior to recording of her statement, therefore,  her statement is not credible and required strong corroboration which was lacking. Accused acquitted.",2026,Admin,2026-05-22 07:02:44,2026-05-22 07:02:44
+34,PLD 2026 SC 187,Appreciation of Evidence,"During appeal the rape was converted into fornication and the accused was sentenced 5 year punishment and fine. 
+It would be a fallacy to only focus on preservation period of swab standards alone to examine its authenticity. It is the DNA extracted from buckle swab standards which can stay for years. Period of approximately 1/1/2 years after collection of swabs does not seem as a period which can discredit evidentiary value of such DNA in given circumstances.",2026,Admin,2026-05-22 07:23:18,2026-05-22 07:29:34
+35,2026 PCRLJ 675 AJ&K,Appreciation of Evidence,"As per postmortem report two large and one small palettes were recovered from the body of disease but merely mentioning pallets in the postmortem report instead of bullets by the medical officer did not mean that the medical evidence was not in line, Nexus and consonance with the prosecution version because the medical officer had never been considered as arms expert.",2026,Admin,2026-05-24 05:34:51,2026-05-24 05:34:51
+36,2026 PCRLJ 609 Balochistan,Appreciation of Evidence,"In the absence of direct evidence a conviction can be secured if the chain of circumstantial evidence remains unbroken, directly linking the commission of the offence to the accused.",2026,Admin,2026-05-24 05:46:10,2026-05-24 05:46:10
+37,2026 MLD 309,Bail,"498 CrPC: 
+
+Acquittal of co-accused cannot be considered a valid ground for pre arrest bail when petitioner accused remained an absconder and waited for conclusion of the trial. 
+
+2026 MLD 309",2026,system@citations.app,2026-05-05 16:51:41,2026-05-09 10:44:26
+38,2026 PCRLJ 294 LAHORE,Bail,The accused shared the hate material through his cell phone. The cell phone of the accused was also sent for forensic analysis. The bail application of the accused was dismissed.,2026,system@citations.app,2026-05-05 16:51:41,2026-05-09 10:44:26
+39,2026 MLD 309 Sindh,Bail,Pre-arrest bail is not a substitute of after-arrest bail.,2026,system@citations.app,2026-05-05 16:51:41,2026-05-09 10:44:26
+40,2026 YLR 564 Lahore,Bail,"Petitioners were not named in the FIR.  They were already lying in the jail where they were interrogated  regarding the present occurrence and were found to be involved in the present case. They also got recovered the cash amount as claimed by the complainant. 
+Non holding of identification period is not a legal requirement in each and every case. Any fact in any form which establish the identity of accused is relevant under article 22 of by Qanun e shahadat 1984. Accused were  visible on CCTV camera recorded clip. Said piece of evidence is admisable under article 22 and 164 Qanun e shahadat 1984. So there is no need of holding of identification period in this situation. 
+Bail rejected.",2026,Admin,2026-05-16 07:51:36,2026-05-16 07:51:36
+41,2026 MLD 485 Islamabad,Civil Laws,"Inheritance. 
+Question of inheritance are not defeated by limitation and no limitation periods runs against the assertion of inheritance rights.",2026,Admin,2026-05-16 07:04:09,2026-05-29 07:19:09
+42,2026 YLR 818 Lahore,Civil Laws,"Amendment in pleadings can be allowed at any stage of proceedings even by first or second appellate Court or in revision or in appeal before the supreme court. However, amendment cannot be allowed if it is changes the complexion of the suit or is sought with mala fadie object of overcoming the contradictions.",2026,Admin,2026-05-16 07:42:52,2026-05-16 07:42:52
+43,2026 SCMR 406,Civil. Pre-emption,"The pre-emptor is son of vendor who was present at the time of execution and registration of sale deed. Despite such knowledge pre-emptor neither objected to the sale nor asserted his right of pre-emption, therefore, the supreme Court set aside  the degree passed in favour of  pre-emptor..",2026,Admin,2026-05-16 05:57:47,2026-05-29 07:18:36
+44,2026 SCMR 587,Civil. Pre-emption,"The petitioner failed to prove transactions of oral gift and mutation independently being beneficiary. The petitioner thriving on the shortcomings of the evidence of respondents instead to produce the stamp vendor, scribe, marginal witnesses, identifying witnesses, Sub registrar and revenue official, as well as patwari before the court for evidence in his favour.",2026,Admin,2026-05-16 06:06:23,2026-05-16 06:06:23
+45,2026 MLD 507 Lahore,Family Law,"Husband is dutybound to maintain his wife and children till their legal entitlement. Right of maintenance flows unconditionally from the base of a valid Nika and constitute binding legal duty. 
+Application of the husband for conducting DNA test was rightly turn down since it was trite law that child born during the subsistence of a valid marriage was presumed legitimate and the mode of determining the paternity through DNA test had been deprecated by the supreme court.",2026,Admin,2026-05-16 07:01:33,2026-05-16 07:01:33
+46,PLD 2020 SC 61,Jurisdictions of Anti-Terrorism Court,"All sections of extortion are non-cognizeable offences. For its trial under ATA 1997 the ingredients of section 6 should be proved.
+PLD 2020 SC 61",2020,system@citations.app,2026-05-05 16:51:41,2026-05-09 10:44:26
+47,2026 PCRLJ SINDH 422,Jurisdictions of Anti-Terrorism Court,"Police officer was murdered in civil clothes when he was not on duty but the reason to murder was discharge of his official duty, therefore, the case will be tried by Anti terrorism Court.",2026,Admin,2026-05-15 06:14:10,2026-05-15 06:14:10
+48,2026 PLD 84 Lahore,Miscellaneous,"The High Court holds that if an accused is acquitted from the case, the police department should issue him a clear character certificate.",2026,system@citations.app,2026-05-05 16:51:41,2026-05-09 10:44:26
+49,2026 SCMR 77,Miscellaneous,After acquittal the accused wants to initiate proceedings under section 182 CrPC against the complainant. The accused was acquitted due to deficient evidence and the court did not hold that the complainant's case is false. Proceedings under section 182 CrPC can only be initiated by the government office to whom the false information was served.,2026,system@citations.app,2026-05-05 16:51:41,2026-05-09 10:44:26
+50,PLD 2016 SC 55,Miscellaneous,"The orders passed either under Section 203, Cr.PC whereby the direct complaint is dismissed or under Section 204, Cr.PC
+whereby the Court has taken cognizance of an offence complained of
+and has issued warrants or summons for causing the accused to be
+brought or produced before the Court are judicial orders. 
+
+ *PLD 2016 SC 55*",2016,system@citations.app,2026-05-05 16:51:41,2026-05-09 10:44:26
+51,2000 SCMR 785,Miscellaneous,"Stage of ""trial""---Scope---Taking of cognizance is not commencement of trial---Trial of a case commences with framing of charge against the accused.
+A statement under Section 164 CrPC may be recorded at any stage prior to the framing of charge, irrespective of whether the accused has been summoned or not prior to such stage.
+2000 SCMR 785
+PLD 2024 SC 1152
+2025 PCrLJ 1919",2000,system@citations.app,2026-05-05 16:51:41,2026-05-09 10:44:26
+52,2023 LHC 7704,Miscellaneous,Sampling for DNA of under custody accused,2023,system@citations.app,2026-05-05 16:51:41,2026-05-09 10:44:26
+53,2022 SCMR 1115,Miscellaneous,"2022 SCMR 1115
+2021 PCRLJ NOTE 66
+Attroney can not get registered an FIR or file a criminal Complaint.",2022,system@citations.app,2026-05-05 16:51:41,2026-05-09 10:44:26
+54,PLD 2026 ISLAMABAD 35,Miscellaneous,"Bail: re-arrest of the accused who's on bail:
+Addition of offences: 
+
+Accused who's on bail cannot be re-arrested on the ground of addition of offences during investigation, unless prosecution seeks cancellation of his bail. 
+Rule 26.21(6) of police rules are referred.
+
+2024 PcrLJ 1568
+Pld 2026 Islamabad 35",2026,system@citations.app,2026-05-05 16:51:41,2026-05-09 10:44:26
+55,PLD 2018 BALOCHISTAN 334,Miscellaneous,"Sessions case can not adjourn sine die 
+PLD 2018 Bal 39
+Sessions court cannot adjourn a case sine die waiting the arrest of co-accused.
+   PLD 2023 LHR 334
+
+Sessions court can use section 249 crpc & sine die adjourn
+2016 pcrlj note 127
+PLD 1978 SC 38",2018,system@citations.app,2026-05-05 16:51:41,2026-05-09 10:44:26
+56,PLD 2023 LAHORE 334,Miscellaneous,"Sessions court cannot adjourn a case sine die waiting the arrest of co-accused.
+   PLD 2023 LHR 334",2023,system@citations.app,2026-05-05 16:51:41,2026-05-09 10:44:26
+57,PLD 1978 SC 38,Miscellaneous,"Sessions court can use section 249 crpc & sine die adjourn
+2016 pcrlj note 127
+PLD 1978 SC 38",1978,system@citations.app,2026-05-05 16:51:41,2026-05-09 10:44:26
+58,2023 LHC 7687,Miscellaneous,The trial court can itself ordered of the DNA of accused and its comparison with the samples taken from the body of victim / disease,2023,system@citations.app,2026-05-05 16:51:41,2026-05-09 10:44:26
+59,PLD 2026 LAHORE 69,Miscellaneous,"489-F PPC: 
+Bank being financial institution couldn't register FIR rather has to follow remedies provided in FIO 2001.
+
+PLD 2026 Lahore 69",2026,system@citations.app,2026-05-05 16:51:41,2026-05-09 10:44:26
+60,2026 SCMR 77,Miscellaneous,"182 PPC: 
+
+Magistrate and Justice of Peace has no authority to issue directions for initiation of proceedings u/s 182 PPC. It can only be initiated by public servant concerned.
+
+2026 SCMR 77",2026,system@citations.app,2026-05-05 16:51:41,2026-05-09 10:44:26
+61,PLD 2023 LAHORE 300,Miscellaneous,"Court cannot close the right of cross examination of accused .
+
+
+",2023,system@citations.app,2026-05-05 16:51:41,2026-05-09 10:44:26
+62,1987 PCLJ 367,Miscellaneous,1987 P.Cr.LJ. 367--Separate charge sheets for distinct offences can be submitted against accused even if there is only one F.I.R.,1987,system@citations.app,2026-05-05 16:51:41,2026-05-09 10:44:26
+63,PLD 2015 SINDHU 250,Miscellaneous,"*Bifurcation of challans* 
+Single FIR
+3 Challans for distinct offences 
+3 trial in different courts on same set of facts & witnesses. 
+APPROVED BY HIGH COURT
+Double Jeopardy not applicable
+ *PLD 2015 Sindh 250*",2015,system@citations.app,2026-05-05 16:51:41,2026-05-09 10:44:26
+64,PLD 2026 ISLAMABAD 63,Miscellaneous,"NCCIA : 
+
+Power to freeze property. NCCIA cannot assume powers provided in the FIA Act 1974. The rules 2025 given these powers beyond the PECA 2016 therefore invalid. 
+
+PLD 2026 Islamabad 63",2026,system@citations.app,2026-05-05 16:51:41,2026-05-09 10:44:26
+65,2026 PCRLJ 277 Islamabad,Miscellaneous,The Investigating Officer cannot be confronted with a video available in the phone of the accused where there is no forensic analysis report and the IO is also appearing in the same video.,2026,system@citations.app,2026-05-05 16:51:41,2026-05-09 10:44:26
+66,2026 PCRLJ 272 Lahore,Miscellaneous,"If the law provides a specific method to perform any act and the said act was not done in that way, it will be presumed that the same was not done in accordance with law.",2026,system@citations.app,2026-05-05 16:51:41,2026-05-09 10:44:26
+67,PLD 1984 SC 95,Miscellaneous,Anti corruption establishment cannot register a case regarding the validity of marriage.,1984,Admin,2026-05-14 13:37:02,2026-05-14 13:37:02
+68,"PLD 2021 SC 488, PLD 2024 SC 75",Miscellaneous,Judgments on mental illness,2021,Admin,2026-05-14 13:55:55,2026-05-14 13:55:55
+69,PLJ 2025 Lahore 398,Miscellaneous,"After cancellation of the FIR by magistrate the police cannot re investigate the case until the order of magistrate sat aside by higher forum.
+Further that when the investigation transfered to new police officer  after completing the investigation to some stage by new police officer the investigation cannot be interested to the previous investigation officer for the reaction.",2025,Admin,2026-05-14 14:06:27,2026-05-14 14:06:27
+70,2026 PCRLJ Lahore 436,Miscellaneous,Superdari application of the petitioner was dismissed as he got changed the ownership of the said car when the car was in custody of police.  Its amount to melafide intent. Such a transfer not only disregards the legal status of the vehicle as evidence in a criminal case but also appears to be a deliberate attempt to frustrate the judicial process.,2026,Admin,2026-05-15 06:24:54,2026-05-15 06:24:54
+71,2026 PCRLJ Lahore 451,Miscellaneous,The court can  order for concurrent running of the sentences awarded to the convict in a case are even in more cases. The  superior courts have used jurisdiction under section 561 read with section 35 and or section 397 CrPC as the case may be.,2026,Admin,2026-05-15 06:32:59,2026-05-15 06:32:59
+72,2026 PCRLJ Lahore 472,Miscellaneous,"Petitioner claimed that the calls made to rescue 15, no name of a accused was disclosed in it and requested to summon that wireless operator as Court witness along with record but the court refused. Held that the said witness was necessary for the just decision of the case. Said documents / rapats were relevant under article 24 Qanoon e  shahadat order 1984.  Application allowed",2026,Admin,2026-05-15 06:45:13,2026-05-15 06:45:13
+73,2026 SCMR 480,Miscellaneous,The legal hair did not challenge before high Court the statements of compromise recorded by trial post. Once the statements were made before trial court the matter has become concluded and the legal hairs could not retract their statements later on.,2026,Admin,2026-05-16 05:48:46,2026-05-16 05:48:46
+74,2026 MLD Lahore 525,Miscellaneous,"Child marriage restrained Act 1929.
+ The justice of peace has no power to direct the police to register a case under the provisions of child marriage restrained act. The union council is under obligation to act on the information and lodge a complaint before competent court in a accordance with section 9 of said act. If Union council failed to do so then RIT petition of Mandamus  under article 199 can be filed before high Court.",2026,Admin,2026-05-16 06:43:14,2026-05-16 06:43:14
+75,2026 MLD 575 Lahore,Miscellaneous,"Dismissal of private complaint. 
+Trial court while considering the facts of other connected cases not available in the evidence of complaint case had travelled beyond its jurisdiction. The high Court Sat aside the order of the the trial court and directed the trial court to issue process under section 204 CrPC against respondents and to proceed with the trial in due course of law.",2026,Admin,2026-05-16 07:08:50,2026-05-16 07:08:50
+76,PLD 2007 SC 539,Miscellaneous,Existence of an FIR was no condition president for holding of an investigation nor was the same a prerequisite for the arrest of a person concerned with the commission of a cognizable of offence. Nor does the recording of an FIR means that the SHO or a police officer deputed by him was obliged to investigate the case or to go through the whole length of investigation of the case mentioned there in or that any accused person nominated there in must be arrested.,2007,Admin,2026-05-16 08:11:01,2026-05-16 08:13:05
+77,PLD 1994 Lahore 485,Miscellaneous,In the case of cognizable offences receipt and recording of a first information report is not a condition President to the setting in motion of a criminal investigation. Delay in recording of fir,1994,Admin,2026-05-16 08:15:33,2026-05-18 17:55:43
+78,PLD 2026 Lahore 343,Miscellaneous,"High court quashed the fir of rape because the petitioner has sent a notice to the union council for revocation of divorce prior to completion of 90 days. Therefore, no offence of rape is constituted.",2026,Admin,2026-05-22 07:35:13,2026-05-22 07:35:13
+79,2026 MLD 739 Lahore,Miscellaneous,Court can summon any person whose name is mentioned in column number 2 of report number section  173 CRPC prior to regarding of any evidence.,2026,Admin,2026-05-24 05:27:20,2026-05-24 05:27:20
+80,2026 PCRLJ 638 Lahore,Miscellaneous,Attorney of a person can lodge FIR with police and can also initiate criminal proceedings before Court for the interest of his principal. If proceedings before Court are initiated by principal and he becomes unavailable or in capacitated the attorney can also continue it on his behalf with the permission of the court.,2026,Admin,2026-05-24 05:39:35,2026-05-24 05:39:35
