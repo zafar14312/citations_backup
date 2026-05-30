@@ -830,3 +830,5 @@ Trial court while considering the facts of other connected cases not available i
 80,2026 PCRLJ 638 Lahore,Miscellaneous,Attorney of a person can lodge FIR with police and can also initiate criminal proceedings before Court for the interest of his principal. If proceedings before Court are initiated by principal and he becomes unavailable or in capacitated the attorney can also continue it on his behalf with the permission of the court.,2026,Admin,2026-05-24 05:39:35,2026-05-24 05:39:35
 
 [2026-05-30] BACKUP SUCCESS: 80 citations. New: 4, Deleted: 0, Updated: 3
+
+[2026-05-30] BACKUP SUCCESS: 80 citations. New: 4, Deleted: 0, Updated: 3
