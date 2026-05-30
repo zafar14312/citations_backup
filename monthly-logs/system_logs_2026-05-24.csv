@@ -1,5 +1,0 @@
-user_name,action,details,ip_address,device,created_at
-Admin,login,"{""method"":""password"",""remember_me"":false}",::1,Chrome / Windows,"May 24, 2026, 05:29:15 PM"
-Admin,login,"{""method"":""password"",""remember_me"":false}",::1,Chrome / Windows,"May 24, 2026, 05:07:53 PM"
-Admin,login,"{""method"":""password"",""remember_me"":false}",::1,Chrome / Windows,"May 24, 2026, 04:46:25 PM"
-Admin,login,"{""method"":""password"",""remember_me"":false}",::1,Chrome / Windows,"May 24, 2026, 04:26:10 PM"
