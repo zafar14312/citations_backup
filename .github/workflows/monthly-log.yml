@@ -39,17 +39,22 @@ jobs:
             const userMap = Object.fromEntries((users||[]).map(u=>[u.id, u.name||u.email||'Unknown']));
             const catMap = Object.fromEntries((cats||[]).map(c=>[c.id, c.name]));
             let sr=1;
-            const citationRows = (citations||[]).map(c => ({
-              sr_no: sr++,
-              citation: c.citation||'',
-              category_name: catMap[c.category_id]||c.category_id||'',
-              details: c.details||'',
-              year: c.year||'',
-              user_name: userMap[c.user_id]||'Unknown',
-              created_at: fmt(c.created_at),
-              updated_at: fmt(c.updated_at),
-              deleted: c.deleted_at ? 'deleted' : ''
-            }));
+            const citationRows = (citations||[]).map(c => {
+              // Fix line breaks: replace newlines with space in details field
+              let detailsText = c.details || '';
+              detailsText = detailsText.replace(/\n/g, ' ').replace(/\r/g, ' ');
+              return {
+                sr_no: sr++,
+                citation: c.citation||'',
+                category_name: catMap[c.category_id]||c.category_id||'',
+                details: detailsText,
+                year: c.year||'',
+                user_name: userMap[c.user_id]||'Unknown',
+                created_at: fmt(c.created_at),
+                updated_at: fmt(c.updated_at),
+                deleted: c.deleted_at ? 'deleted' : ''
+              };
+            });
             if (citationRows.length) {
               const headers = ['sr_no','citation','category_name','details','year','user_name','created_at','updated_at','deleted'];
               const csv = [headers.join(','), ...citationRows.map(r=>headers.map(h=>escape(r[h])).join(','))].join('\n');
