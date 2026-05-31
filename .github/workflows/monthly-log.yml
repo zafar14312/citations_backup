@@ -1,4 +1,4 @@
-name: Monthly Log Export (Citations + System Logs)
+name: Monthly Combined Report (System Logs + Citations)
 
 on:
   schedule:
@@ -6,11 +6,10 @@ on:
   workflow_dispatch:
 
 jobs:
-  export-logs:
+  export-report:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -18,7 +17,7 @@ jobs:
           node-version: 22
       - run: npm install @supabase/supabase-js
 
-      - name: Generate CSV files (citations and system logs)
+      - name: Generate combined CSV (system logs first, then citations)
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
@@ -29,8 +28,25 @@ jobs:
           const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
 
           const fmt = d => d ? new Date(d).toISOString().slice(0,19).replace('T',' ') : '';
+          const escape = v => v == null ? '' : String(v).includes(',') ? `"${String(v).replace(/"/g,'""')}"` : String(v);
 
           async function main() {
+            // ----- 1. System logs (exclude citation actions) -----
+            const { data: logs } = await supabase
+              .from('system_logs')
+              .select('*, users(name)')
+              .not('action','in','(citation_created,citation_updated,citation_deleted)')
+              .order('created_at', { ascending: false });
+
+            const systemRows = (logs || []).map(l => ({
+              timestamp: fmt(l.created_at),
+              action: l.action,
+              user_name: l.users?.name || l.user_id || 'system',
+              log_details: typeof l.details === 'object' ? JSON.stringify(l.details) : (l.details || ''),
+              ip: l.ip_address || ''
+            }));
+
+            // ----- 2. Citations (with deleted flag) -----
             const { data: citations } = await supabase.from('citations').select('*').order('created_at');
             const { data: users } = await supabase.from('users').select('id,name,email');
             const { data: cats } = await supabase.from('categories').select('id,name');
@@ -48,39 +64,35 @@ jobs:
               updated_at: fmt(c.updated_at),
               deleted: c.deleted_at ? 'deleted' : ''
             }));
-            const escape = v => v==null ? '' : String(v).includes(',') ? `"${String(v).replace(/"/g,'""')}"` : String(v);
-            if (citationRows.length) {
-              const headers = ['sr_no','citation','category_name','details','year','user_name','created_at','updated_at','deleted'];
-              const csv = [headers.join(','), ...citationRows.map(r=>headers.map(h=>escape(r[h])).join(','))].join('\n');
-              const now = new Date();
-              const file = `monthly-logs/citations_${now.getFullYear()}_${String(now.getMonth()+1).padStart(2,'0')}.csv`;
-              fs.mkdirSync('monthly-logs', {recursive:true});
-              fs.writeFileSync(file, csv);
-              console.log(`Citations: ${citationRows.length} rows`);
+
+            // ----- 3. Combine: system logs first, then blank row, then citations -----
+            const systemHeaders = ['timestamp','action','user_name','log_details','ip'];
+            const citationHeaders = ['sr_no','citation','category_name','details','year','user_name','created_at','updated_at','deleted'];
+
+            const rows = [];
+
+            // System logs rows
+            if (systemRows.length) {
+              rows.push(systemHeaders.join(','));
+              rows.push(...systemRows.map(r => systemHeaders.map(h => escape(r[h])).join(',')));
+              rows.push(''); // blank line separator
             }
 
-            const { data: logs } = await supabase
-              .from('system_logs')
-              .select('*, users(name)')
-              .not('action','in','(citation_created,citation_updated,citation_deleted)')
-              .order('created_at',{ascending:false});
-            if (logs && logs.length) {
-              const sysRows = logs.map(l => ({
-                timestamp: fmt(l.created_at),
-                action: l.action,
-                user_name: l.users?.name || l.user_id || 'system',
-                details: typeof l.details === 'object' ? JSON.stringify(l.details) : (l.details||''),
-                ip: l.ip_address||''
-              }));
-              const headers = ['timestamp','action','user_name','details','ip'];
-              const csv = [headers.join(','), ...sysRows.map(r=>headers.map(h=>escape(r[h])).join(','))].join('\n');
-              const now = new Date();
-              const file = `monthly-logs/system_${now.getFullYear()}_${String(now.getMonth()+1).padStart(2,'0')}.csv`;
-              fs.writeFileSync(file, csv);
-              console.log(`System logs: ${sysRows.length} rows`);
+            // Citations rows
+            if (citationRows.length) {
+              rows.push(citationHeaders.join(','));
+              rows.push(...citationRows.map(r => citationHeaders.map(h => escape(r[h])).join(',')));
             }
+
+            const csv = rows.join('\n');
+
+            const now = new Date();
+            const filename = `monthly-logs/monthly_report_${now.getFullYear()}_${String(now.getMonth()+1).padStart(2,'0')}.csv`;
+            fs.mkdirSync('monthly-logs', { recursive: true });
+            fs.writeFileSync(filename, csv);
+            console.log(`✅ Combined report saved: ${filename}`);
           }
-          main().catch(e=>{console.error(e); process.exit(1);});
+          main().catch(e => { console.error(e); process.exit(1); });
           EOF
 
       - name: Commit and push
@@ -88,15 +100,14 @@ jobs:
           git config user.name "GitHub Actions Bot"
           git config user.email "actions@github.com"
           git add monthly-logs/
-          git commit -m "Monthly logs $(date +'%Y-%m-%d')" || echo "No changes"
+          git commit -m "Monthly combined report $(date +'%Y-%m')" || echo "No changes"
           git push
 
-      - name: Keep only last 3 months logs
+      - name: Keep only last 3 months reports
         run: |
           cd monthly-logs
-          ls -1 citations_*.csv 2>/dev/null | sort -r | tail -n +4 | xargs -r rm -f
-          ls -1 system_*.csv 2>/dev/null | sort -r | tail -n +4 | xargs -r rm -f
+          ls -1 monthly_report_*.csv 2>/dev/null | sort -r | tail -n +4 | xargs -r rm -f
           cd ..
           git add monthly-logs/
-          git commit -m "Cleanup old logs (keep last 3)" || echo "No changes"
+          git commit -m "Cleanup old monthly reports (keep last 3)" || echo "No changes"
           git push
