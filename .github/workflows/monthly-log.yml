@@ -1,15 +1,16 @@
-name: Monthly Combined Report (System Logs + Citations)
+name: Monthly Logs (Citations + System Logs)
 
 on:
   schedule:
-    - cron: '0 2 1 * *'
+    - cron: '0 2 1 * *'      # 1st of every month at 2 AM UTC
   workflow_dispatch:
 
 jobs:
-  export-report:
+  export-logs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -17,7 +18,7 @@ jobs:
           node-version: 22
       - run: npm install @supabase/supabase-js
 
-      - name: Generate combined CSV (system logs first, then citations)
+      - name: Generate citations CSV and system logs CSV
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
@@ -31,22 +32,7 @@ jobs:
           const escape = v => v == null ? '' : String(v).includes(',') ? `"${String(v).replace(/"/g,'""')}"` : String(v);
 
           async function main() {
-            // ----- 1. System logs (exclude citation actions) -----
-            const { data: logs } = await supabase
-              .from('system_logs')
-              .select('*, users(name)')
-              .not('action','in','(citation_created,citation_updated,citation_deleted)')
-              .order('created_at', { ascending: false });
-
-            const systemRows = (logs || []).map(l => ({
-              timestamp: fmt(l.created_at),
-              action: l.action,
-              user_name: l.users?.name || l.user_id || 'system',
-              log_details: typeof l.details === 'object' ? JSON.stringify(l.details) : (l.details || ''),
-              ip: l.ip_address || ''
-            }));
-
-            // ----- 2. Citations (all, with deleted flag) -----
+            // ----- 1. Citations CSV (with deleted flag) -----
             const { data: citations } = await supabase.from('citations').select('*').order('created_at');
             const { data: users } = await supabase.from('users').select('id,name,email');
             const { data: cats } = await supabase.from('categories').select('id,name');
@@ -64,39 +50,39 @@ jobs:
               updated_at: fmt(c.updated_at),
               deleted: c.deleted_at ? 'deleted' : ''
             }));
-
-            // ----- Combine: system logs first, then citations (no blank row) -----
-            const allRows = [];
-
-            if (systemRows.length) {
-              const sysHeaders = ['timestamp','action','user_name','log_details','ip'];
-              allRows.push(sysHeaders.join(','));
-              allRows.push(...systemRows.map(r => sysHeaders.map(h => escape(r[h])).join(',')));
-            }
-
             if (citationRows.length) {
-              // If system logs exist, add a blank line? No, as per your request: "beach mein blank row nahi daini"
-              // So just add citations directly. But we need to add headers only if citations exist.
-              const citHeaders = ['sr_no','citation','category_name','details','year','user_name','created_at','updated_at','deleted'];
-              if (allRows.length > 0) {
-                // Add a newline separator? Actually to keep clean, just add header row.
-                // But to avoid confusion, we add header row.
-                allRows.push(citHeaders.join(','));
-              } else {
-                allRows.push(citHeaders.join(','));
-              }
-              allRows.push(...citationRows.map(r => citHeaders.map(h => escape(r[h])).join(',')));
+              const headers = ['sr_no','citation','category_name','details','year','user_name','created_at','updated_at','deleted'];
+              const csv = [headers.join(','), ...citationRows.map(r=>headers.map(h=>escape(r[h])).join(','))].join('\n');
+              const now = new Date();
+              const file = `monthly-logs/citations_${now.getFullYear()}_${String(now.getMonth()+1).padStart(2,'0')}.csv`;
+              fs.mkdirSync('monthly-logs', {recursive:true});
+              fs.writeFileSync(file, csv);
+              console.log(`Citations CSV: ${citationRows.length} rows`);
             }
 
-            const csv = allRows.join('\n');
-
-            const now = new Date();
-            const filename = `monthly-logs/monthly_report_${now.getFullYear()}_${String(now.getMonth()+1).padStart(2,'0')}.csv`;
-            fs.mkdirSync('monthly-logs', { recursive: true });
-            fs.writeFileSync(filename, csv);
-            console.log(`✅ Combined report saved: ${filename} (system: ${systemRows.length}, citations: ${citationRows.length})`);
+            // ----- 2. System logs CSV (exclude citation actions, rename details to log_details) -----
+            const { data: logs } = await supabase
+              .from('system_logs')
+              .select('*, users(name)')
+              .not('action','in','(citation_created,citation_updated,citation_deleted)')
+              .order('created_at',{ascending:false});
+            if (logs && logs.length) {
+              const sysRows = logs.map(l => ({
+                timestamp: fmt(l.created_at),
+                action: l.action,
+                user_name: l.users?.name || l.user_id || 'system',
+                log_details: typeof l.details === 'object' ? JSON.stringify(l.details) : (l.details||''),
+                ip: l.ip_address||''
+              }));
+              const headers = ['timestamp','action','user_name','log_details','ip'];
+              const csv = [headers.join(','), ...sysRows.map(r=>headers.map(h=>escape(r[h])).join(','))].join('\n');
+              const now = new Date();
+              const file = `monthly-logs/system_${now.getFullYear()}_${String(now.getMonth()+1).padStart(2,'0')}.csv`;
+              fs.writeFileSync(file, csv);
+              console.log(`System logs CSV: ${sysRows.length} rows`);
+            }
           }
-          main().catch(e => { console.error(e); process.exit(1); });
+          main().catch(e=>{console.error(e); process.exit(1);});
           EOF
 
       - name: Commit and push
@@ -104,14 +90,15 @@ jobs:
           git config user.name "GitHub Actions Bot"
           git config user.email "actions@github.com"
           git add monthly-logs/
-          git commit -m "Monthly combined report $(date +'%Y-%m')" || echo "No changes"
+          git commit -m "Monthly logs $(date +'%Y-%m-%d')" || echo "No changes"
           git push
 
-      - name: Keep only last 3 months reports
+      - name: Keep only last 3 months logs
         run: |
           cd monthly-logs
-          ls -1 monthly_report_*.csv 2>/dev/null | sort -r | tail -n +4 | xargs -r rm -f
+          ls -1 citations_*.csv 2>/dev/null | sort -r | tail -n +4 | xargs -r rm -f
+          ls -1 system_*.csv 2>/dev/null | sort -r | tail -n +4 | xargs -r rm -f
           cd ..
           git add monthly-logs/
-          git commit -m "Cleanup old monthly reports (keep last 3)" || echo "No changes"
+          git commit -m "Cleanup old logs (keep last 3)" || echo "No changes"
           git push
