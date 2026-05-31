@@ -2,7 +2,7 @@ name: Monthly Combined Report (System Logs + Citations)
 
 on:
   schedule:
-    - cron: '0 2 1 * *'      # 1st of every month at 2 AM UTC
+    - cron: '0 2 1 * *'
   workflow_dispatch:
 
 jobs:
@@ -46,7 +46,7 @@ jobs:
               ip: l.ip_address || ''
             }));
 
-            // ----- 2. Citations (with deleted flag) -----
+            // ----- 2. Citations (all, with deleted flag) -----
             const { data: citations } = await supabase.from('citations').select('*').order('created_at');
             const { data: users } = await supabase.from('users').select('id,name,email');
             const { data: cats } = await supabase.from('categories').select('id,name');
@@ -65,32 +65,36 @@ jobs:
               deleted: c.deleted_at ? 'deleted' : ''
             }));
 
-            // ----- 3. Combine: system logs first, then blank row, then citations -----
-            const systemHeaders = ['timestamp','action','user_name','log_details','ip'];
-            const citationHeaders = ['sr_no','citation','category_name','details','year','user_name','created_at','updated_at','deleted'];
+            // ----- Combine: system logs first, then citations (no blank row) -----
+            const allRows = [];
 
-            const rows = [];
-
-            // System logs rows
             if (systemRows.length) {
-              rows.push(systemHeaders.join(','));
-              rows.push(...systemRows.map(r => systemHeaders.map(h => escape(r[h])).join(',')));
-              rows.push(''); // blank line separator
+              const sysHeaders = ['timestamp','action','user_name','log_details','ip'];
+              allRows.push(sysHeaders.join(','));
+              allRows.push(...systemRows.map(r => sysHeaders.map(h => escape(r[h])).join(',')));
             }
 
-            // Citations rows
             if (citationRows.length) {
-              rows.push(citationHeaders.join(','));
-              rows.push(...citationRows.map(r => citationHeaders.map(h => escape(r[h])).join(',')));
+              // If system logs exist, add a blank line? No, as per your request: "beach mein blank row nahi daini"
+              // So just add citations directly. But we need to add headers only if citations exist.
+              const citHeaders = ['sr_no','citation','category_name','details','year','user_name','created_at','updated_at','deleted'];
+              if (allRows.length > 0) {
+                // Add a newline separator? Actually to keep clean, just add header row.
+                // But to avoid confusion, we add header row.
+                allRows.push(citHeaders.join(','));
+              } else {
+                allRows.push(citHeaders.join(','));
+              }
+              allRows.push(...citationRows.map(r => citHeaders.map(h => escape(r[h])).join(',')));
             }
 
-            const csv = rows.join('\n');
+            const csv = allRows.join('\n');
 
             const now = new Date();
             const filename = `monthly-logs/monthly_report_${now.getFullYear()}_${String(now.getMonth()+1).padStart(2,'0')}.csv`;
             fs.mkdirSync('monthly-logs', { recursive: true });
             fs.writeFileSync(filename, csv);
-            console.log(`✅ Combined report saved: ${filename}`);
+            console.log(`✅ Combined report saved: ${filename} (system: ${systemRows.length}, citations: ${citationRows.length})`);
           }
           main().catch(e => { console.error(e); process.exit(1); });
           EOF
