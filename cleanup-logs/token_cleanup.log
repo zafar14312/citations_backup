@@ -9,3 +9,4 @@
 [2026-06-01T15:23:45.394Z] ========== CLEANUP START ==========
 [2026-06-01T15:23:48.266Z] Token cleanup (15d): 0 expired tokens deleted
 [2026-06-01T15:23:51.371Z] Manifest cleanup (15d): Exported 4 records to manifest-logs/manifest_2026-06-01.csv and deleted from Supabase
+[2026-06-01T15:23:52.834Z] ========== CLEANUP END ==========
