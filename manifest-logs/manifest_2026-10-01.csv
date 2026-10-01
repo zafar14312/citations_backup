@@ -1,0 +1,3 @@
+id,backup_type,data_type,file_name,record_count,created_at,status,updated_at
+1606f28d-f1b3-463d-aa90-dec6c9cbc47a,daily,csv_json,backup_2026-09-04,106,2026-09-04T09:00:02.93+00:00,completed,2026-09-04T09:00:08.016753+00:00
+b96933b4-6e94-417d-a03e-7372db1ed28b,daily,csv_json,backup_2026-09-11,106,2026-09-11T09:00:03.008+00:00,completed,2026-09-11T09:00:09.724294+00:00
