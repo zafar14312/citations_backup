@@ -61,3 +61,4 @@
 [2026-11-01T15:51:40.305Z] ========== CLEANUP START ==========
 [2026-11-01T15:51:43.238Z] Token cleanup (15d): 0 expired tokens deleted
 [2026-11-01T15:51:44.792Z] Manifest cleanup (15d): No old records found
+[2026-11-01T15:51:45.707Z] ========== CLEANUP END ==========
